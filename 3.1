@@ -1,0 +1,107 @@
+//create a database cricketdata in mongodb shell or compass
+
+mkdir my-node-project
+cd my-node-project
+
+npm init-y
+npm install mongoose
+
+// Contents of player.js
+
+const mongoose = require('mongoose');
+
+// Connect to MongoDB
+mongoose.connect('mongodb://localhost/cricketdata', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
+// Define the Player schema
+const playerSchema = new mongoose.Schema({
+  name : String,
+  age : Number,
+  centuries : Number,
+  halfcenturies : Number,
+  totalscore : Number,
+});
+
+// Create the Player model
+const Player = mongoose.model('Player', playerSchema);
+
+// Adding sample data
+  Player.insertMany([
+  {
+		name:'virat kohli',
+		age:34,
+		centuries:77,
+		halfcenturies:125,
+		totalscore:23452,
+
+	},
+
+	{
+		name:'rohit sharma',
+		age:35,
+		centuries:55,
+		halfcenturies:133,
+		totalscore:16895,
+
+	},
+
+	{
+		name:'shikhar dhawan',
+		age:40,
+		centuries:17,
+		halfcenturies:44,
+		totalscore:12893,
+
+	},
+
+	{
+		name:'steve smith',
+		age:42,
+		centuries:48,
+		halfcenturies:79,
+		totalscore:13219,
+
+	},
+
+	{
+		name:'chris gayle',
+		age:48,
+		centuries:57,
+		halfcenturies:77,
+		totalscore:16478,
+	}
+]);
+
+// Perform queries
+async function performQueries() 
+
+{
+ 
+ // 1. Highest score
+  const highestscore = await Player.findOne().sort('-totalscore');
+  console.log('highestscore:', highestscore);
+
+  // 2. lowest score
+  const lowestscore = await Player.findOne().sort('totalscore');
+  console.log('lowestscore:', lowestscore);
+
+  // 3. highest age
+  const highestage = await Player.findOne().sort('-age');
+  console.log('highest age:', highestage);
+
+  // 4. highest centuries
+  const highestcenturies = await Player.findOne().sort('-centuries');
+  console.log('highest centuries:', highestcenturies);
+
+  // 5. lowest halfcenturies
+  const lowesthalfcenturies = await Player.findOne().sort('halfcenturies');
+  console.log('lowest halfcenturies:', lowesthalfcenturies);
+}
+
+// Perform the queries
+performQueries();
+
+//node player.js 
