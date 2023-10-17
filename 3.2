@@ -1,0 +1,70 @@
+// players.js
+const express = require('express');
+const mongoose = require('mongoose');
+const Player = require('./Player');// importing player model
+
+const app = express();
+app.use(express.json());
+
+const mongoURI = 'mongodb://localhost:27017/cricket'; //MongoDB URI
+mongoose.connect(mongoURI, { 
+useNewUrlParser: true, 
+useUnifiedTopology: true
+});
+
+const db = mongoose.connection;
+// API endpoints for adding, updating, and deleting players
+
+app.post('/players', async (req, res) => {
+  try {
+    const playerData = req.body;
+    const player = await Player.create(playerData);
+    res.status(201).json(player);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add the player' });
+  }
+});
+
+app.put('/players/:id', async (req, res) => {
+  const playerId = req.params.id;
+  const updatedData = req.body;
+
+  try {
+    const updatedPlayer = await Player.findByIdAndUpdate(playerId, updatedData, { new: true });
+    if (!updatedPlayer) {
+      return res.status(404).json({ error: 'Player not found' });
+    }
+    res.status(200).json(updatedPlayer);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update the player' });
+  }
+});
+
+app.delete('/players/:id', async (req, res) => {
+  const playerId = req.params.id;
+
+  try {
+    const deletedPlayer = await Player.findByIdAndDelete(playerId);
+    if (!deletedPlayer) {
+      return res.status(404).json({ error: 'Player not found' });
+    }
+    res.status(200).json({ message: 'Player deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete the player' });
+  }
+});
+
+// API endpoint for performing queries
+app.get('/players', async (req, res) => {
+  try {
+    const players = await Player.find(); // example query
+    //different queries can be implement here
+    res.status(200).json(players);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
